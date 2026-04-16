@@ -1,5 +1,105 @@
+// ====== GAMIFICATION SYSTEM ======
+class GameState {
+    constructor() {
+        this.level = 1;
+        this.xp = 0;
+        this.maxXp = 100;
+        this.achievements = [];
+        this.challengesCompleted = 0;
+        this.quizzesCompleted = 0;
+        this.phishingScore = 0;
+        this.passwordStrength = 0;
+    }
+
+    static load() {
+        const saved = localStorage.getItem('cyberSafeGameState');
+        if (saved) {
+            const data = JSON.parse(saved);
+            const state = new GameState();
+            Object.assign(state, data);
+            return state;
+        }
+        return new GameState();
+    }
+
+    save() {
+        localStorage.setItem('cyberSafeGameState', JSON.stringify(this));
+    }
+
+    addXP(amount) {
+        this.xp += amount;
+        if (this.xp >= this.maxXp) {
+            this.levelUp();
+        }
+        this.save();
+        updateGameUI();
+    }
+
+    levelUp() {
+        this.level++;
+        this.xp = 0;
+        this.maxXp = Math.floor(100 * (1.1 ** this.level));
+        this.unlockAchievement('level_' + this.level);
+        this.save();
+        showLevelUpNotification(this.level);
+    }
+
+    unlockAchievement(id) {
+        if (!this.achievements.includes(id)) {
+            this.achievements.push(id);
+            this.save();
+            return true;
+        }
+        return false;
+    }
+
+    getProgress() {
+        return (this.xp / this.maxXp) * 100;
+    }
+}
+
+let gameState = GameState.load();
+
+function updateGameUI() {
+    const profileDiv = document.getElementById('game-profile');
+    if (profileDiv) {
+        const progress = gameState.getProgress();
+        profileDiv.innerHTML = `
+            <div class="profile-header">
+                <h3>🎮 Level ${gameState.level}</h3>
+                <p class="xp-text">${gameState.xp} / ${gameState.maxXp} XP</p>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progress}%"></div>
+            </div>
+            <div class="achievements-display">
+                <span class="achievement-count">🏆 ${gameState.achievements.length} Achievements</span>
+            </div>
+        `;
+    }
+}
+
+function showLevelUpNotification(level) {
+    const notification = document.createElement('div');
+    notification.className = 'level-up-notification';
+    notification.innerHTML = `
+        <div class="level-up-content">
+            <h2>🎉 LEVEL UP!</h2>
+            <p>You reached Level ${level}!</p>
+        </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 2000);
+}
+
 // Password Strength Tester
 document.addEventListener('DOMContentLoaded', function() {
+    updateGameUI();
+
     // Password tester
     const passwordInput = document.getElementById('password');
     const testButton = document.getElementById('test-password');
@@ -20,6 +120,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     resultDiv.innerHTML += `<li>${item}</li>`;
                 });
                 resultDiv.innerHTML += "</ul>";
+            }
+
+            // Award XP for testing
+            if (result.strength === 'Strong' || result.strength === 'Medium') {
+                const xpReward = result.strength === 'Strong' ? 50 : 25;
+                gameState.passwordStrength++;
+                gameState.addXP(xpReward);
+                
+                const xpDisplay = document.createElement('div');
+                xpDisplay.className = 'xp-popup';
+                xpDisplay.innerHTML = `+${xpReward} XP 🎯`;
+                resultDiv.appendChild(xpDisplay);
+                
+                if (gameState.passwordStrength === 1) {
+                    gameState.unlockAchievement('first_strong_password');
+                }
             }
         });
     }
@@ -85,12 +201,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            resultsDiv.innerHTML = `<p>You got ${score} out of 3 correct!</p>`;
+            const xpReward = score * 25;
+            gameState.phishingScore = Math.max(gameState.phishingScore, Math.round((score / 3) * 100));
+            gameState.addXP(xpReward);
+            gameState.challengesCompleted++;
+
+            resultsDiv.innerHTML = `
+                <div class="challenge-result">
+                    <p>You got ${score} out of 3 correct!</p>
+                    <p class="xp-reward">+${xpReward} XP 🎯</p>
+            `;
             if (score === 3) {
-                resultsDiv.innerHTML += "<p>Great job! You're good at spotting phishing attempts.</p>";
+                resultsDiv.innerHTML += "<p>🏆 Perfect! You're a phishing expert!</p>";
+                gameState.unlockAchievement('phishing_master');
+            } else if (score === 2) {
+                resultsDiv.innerHTML += "<p>⭐ Great work! Keep practicing those detective skills.</p>";
             } else {
-                resultsDiv.innerHTML += "<p>Keep practicing! Remember to check sender addresses and look for suspicious links.</p>";
+                resultsDiv.innerHTML += "<p>💪 Keep practicing! Remember to check sender addresses and look for suspicious links.</p>";
+                gameState.unlockAchievement('first_challenge');
             }
+            resultsDiv.innerHTML += '</div>';
         });
     }
 
@@ -164,6 +294,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let backgroundColor = '';
         let passed = percentage >= 70;
 
+        // Award XP based on performance
+        let xpReward = 0;
+        if (passed) {
+            xpReward = score === totalQuestions ? 150 : Math.round(score * 12);
+            gameState.quizzesCompleted++;
+        } else {
+            xpReward = score * 5;
+        }
+        gameState.addXP(xpReward);
+
         if (!passed) {
             // FAIL condition
             message = '❌ You Failed! You need 70% to pass. Study more and try again!';
@@ -171,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (score === totalQuestions) {
             message = '🎉 Perfect Score! You\'re a cybersecurity expert!';
             backgroundColor = '#d4edda';
+            gameState.unlockAchievement('perfect_quiz');
         } else if (score >= 9) {
             message = '🌟 Great job! You really know your stuff!';
             backgroundColor = '#d4edda';
@@ -180,6 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (score >= 7) {
             message = '💯 You passed! Nice job!';
             backgroundColor = '#d4edda';
+            gameState.unlockAchievement('quiz_passed');
         } else {
             message = '💪 Keep practicing! Cybersecurity is important.';
             backgroundColor = '#f8d7da';
@@ -190,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3>Quiz Complete!</h3>
             <p><strong>Your Score: ${score} out of ${totalQuestions} (${percentage}%)</strong></p>
             <p style="font-size: 1.1rem;">${message}</p>
+            <p class="xp-reward" style="margin-top: 1rem; font-size: 1.2rem;">+${xpReward} XP 🎯</p>
             <p style="margin-top: 1rem; font-size: 0.95rem;">Questions you missed: ${wrongCount}</p>
             <button id="retake-quiz" class="button" style="margin-top: 1rem;">Retake Quiz</button>
         `;
