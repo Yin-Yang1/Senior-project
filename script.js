@@ -96,6 +96,34 @@ function showLevelUpNotification(level) {
     }, 2000);
 }
 
+function showRewardPopup(xpAmount, rewardName) {
+    const popup = document.createElement('div');
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    popup.style.backgroundColor = '#d4edda';
+    popup.style.border = '3px solid #28a745';
+    popup.style.borderRadius = '12px';
+    popup.style.padding = '2rem';
+    popup.style.textAlign = 'center';
+    popup.style.zIndex = '10000';
+    popup.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+    popup.style.minWidth = '300px';
+    popup.innerHTML = `
+        <p style="margin: 0; font-size: 1.4rem; color: #28a745;"><strong>🎯 Rewards Claimed!</strong></p>
+        <p style="margin: 0.5rem 0; font-size: 2rem; color: #155724;">+${xpAmount} XP</p>
+        <p style="margin: 0.5rem 0; font-size: 0.9rem; color: #666;">From: ${rewardName}</p>
+    `;
+    document.body.appendChild(popup);
+    
+    setTimeout(() => {
+        popup.style.opacity = '0';
+        popup.style.transition = 'opacity 0.5s ease-out';
+        setTimeout(() => popup.remove(), 500);
+    }, 2000);
+}
+
 // Password Strength Tester
 document.addEventListener('DOMContentLoaded', function() {
     updateGameUI();
@@ -125,17 +153,36 @@ document.addEventListener('DOMContentLoaded', function() {
             // Award XP for testing
             if (result.strength === 'Strong' || result.strength === 'Medium') {
                 const xpReward = result.strength === 'Strong' ? 50 : 25;
-                gameState.passwordStrength++;
-                gameState.addXP(xpReward);
                 
                 const xpDisplay = document.createElement('div');
                 xpDisplay.className = 'xp-popup';
-                xpDisplay.innerHTML = `+${xpReward} XP 🎯`;
+                xpDisplay.style.position = 'relative';
+                xpDisplay.style.marginTop = '1rem';
+                xpDisplay.style.padding = '1rem';
+                xpDisplay.style.backgroundColor = '#d4edda';
+                xpDisplay.style.border = '2px solid #28a745';
+                xpDisplay.style.borderRadius = '8px';
+                xpDisplay.innerHTML = `
+                    <p style="margin: 0.5rem 0;"><strong>🎯 Rewards Available!</strong></p>
+                    <p style="margin: 0.5rem 0; font-size: 1.2rem;">+${xpReward} XP</p>
+                    <button id="claim-password-rewards" class="button" style="background: #4CAF50; margin-top: 0.5rem; width: 100%;">✓ Claim Rewards</button>
+                `;
                 resultDiv.appendChild(xpDisplay);
                 
-                if (gameState.passwordStrength === 1) {
-                    gameState.unlockAchievement('first_strong_password');
-                }
+                // Add claim functionality
+                document.getElementById('claim-password-rewards').addEventListener('click', function() {
+                    gameState.passwordStrength++;
+                    gameState.addXP(xpReward);
+                    
+                    this.disabled = true;
+                    this.innerHTML = '✓ Rewards Claimed!';
+                    this.style.opacity = '0.7';
+                    showRewardPopup(xpReward, 'Password Test Rewards');
+                    
+                    if (gameState.passwordStrength === 1) {
+                        gameState.unlockAchievement('first_strong_password');
+                    }
+                });
             }
         });
     }
@@ -203,7 +250,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const xpReward = score * 25;
             gameState.phishingScore = Math.max(gameState.phishingScore, Math.round((score / 3) * 100));
-            gameState.addXP(xpReward);
             gameState.challengesCompleted++;
 
             resultsDiv.innerHTML = `
@@ -220,7 +266,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultsDiv.innerHTML += "<p>💪 Keep practicing! Remember to check sender addresses and look for suspicious links.</p>";
                 gameState.unlockAchievement('first_challenge');
             }
-            resultsDiv.innerHTML += '</div>';
+            resultsDiv.innerHTML += `
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                    <button id="claim-challenge-rewards" class="button" style="flex: 1; background: #4CAF50;">✓ Claim Rewards</button>
+                    <button id="retry-challenge" class="button" style="flex: 1;">Try Again</button>
+                </div>
+            </div>`;
+
+            // Add claim rewards functionality
+            document.getElementById('claim-challenge-rewards').addEventListener('click', function() {
+                gameState.addXP(xpReward);
+                this.disabled = true;
+                this.innerHTML = '✓ Rewards Claimed!';
+                this.style.opacity = '0.7';
+                showRewardPopup(xpReward, 'Phishing Challenge Rewards');
+            });
+
+            // Add retry functionality
+            document.getElementById('retry-challenge').addEventListener('click', function() {
+                // Reset radio buttons
+                document.querySelectorAll('input[name="email1"], input[name="email2"], input[name="email3"]').forEach(el => el.checked = false);
+                resultsDiv.innerHTML = '';
+                checkAnswersButton.disabled = false;
+            });
         });
     }
 
@@ -302,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             xpReward = score * 5;
         }
-        gameState.addXP(xpReward);
 
         if (!passed) {
             // FAIL condition
@@ -334,7 +401,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <p style="font-size: 1.1rem;">${message}</p>
             <p class="xp-reward" style="margin-top: 1rem; font-size: 1.2rem;">+${xpReward} XP 🎯</p>
             <p style="margin-top: 1rem; font-size: 0.95rem;">Questions you missed: ${wrongCount}</p>
-            <button id="retake-quiz" class="button" style="margin-top: 1rem;">Retake Quiz</button>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button id="claim-quiz-rewards" class="button" style="flex: 1; background: #4CAF50;">✓ Claim Rewards</button>
+                <button id="retake-quiz" class="button" style="flex: 1;">Retake Quiz</button>
+            </div>
         `;
 
         // Scroll to results
@@ -344,6 +414,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (passed) {
             triggerConfetti();
         }
+
+        // Add claim rewards functionality
+        document.getElementById('claim-quiz-rewards').addEventListener('click', function() {
+            gameState.addXP(xpReward);
+            this.disabled = true;
+            this.innerHTML = '✓ Rewards Claimed!';
+            this.style.opacity = '0.7';
+            showRewardPopup(xpReward, 'Quiz Rewards');
+            
+            // After 2 seconds, allow retaking
+            setTimeout(() => {
+                document.getElementById('retake-quiz').disabled = false;
+            }, 2000);
+        });
 
         // Add retake functionality
         document.getElementById('retake-quiz').addEventListener('click', function() {
