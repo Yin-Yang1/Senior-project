@@ -7,10 +7,13 @@
 
 body {
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
+    line-height: 1.8;
     color: #1a1a2e;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
+    font-size: 16px;
+    letter-spacing: 0.3px;
+    padding-top: 250px;
 }
 
 /* ====== GAME UI ELEMENTS ====== */
@@ -181,9 +184,16 @@ header {
     text-align: center;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     border-bottom: none;
-    position: sticky;
+    position: fixed;
     top: 0;
+    width: 100%;
     z-index: 100;
+    transition: transform 0.3s ease;
+    transform: translateY(0);
+}
+
+body {
+    padding-top: 0;
 }
 
 header h1 {
@@ -237,22 +247,32 @@ main {
     max-width: 1100px;
     margin: 3rem auto;
     padding: 0 1.5rem;
+    padding-bottom: 3rem;
 }
 
 section {
     margin-bottom: 2.5rem;
-    padding: 2.5rem;
+    padding: 3rem;
     background: white;
     border: none;
     border-radius: 20px;
     text-align: center;
+    line-height: 1.9;
+}
+
+section p {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+    line-height: 1.7;
 }
 
 section h2 {
     color: #667eea;
     margin-bottom: 1.5rem;
     font-weight: 700;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
+    letter-spacing: 0.5px;
 }
 
 h2 {
@@ -269,6 +289,7 @@ h2 {
     grid-auto-flow: row;
     padding: 0;
     background: transparent;
+    margin-bottom: 2rem;
 }
 
 .module {
@@ -335,18 +356,23 @@ h2 {
     display: inline-block;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 1rem 2rem;
+    padding: 1.1rem 2.5rem;
     text-decoration: none;
     border-radius: 25px;
     transition: all 0.3s ease;
     font-weight: 700;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     position: relative;
     overflow: hidden;
     z-index: 2;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
 }
 
 .button::before {
@@ -385,16 +411,12 @@ footer {
     color: white;
     margin-top: 3rem;
     border-top: none;
-}
-
-/* Email examples */
-.email-example {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+}2rem;
     border: 2px solid #e0e0e0;
     border-radius: 15px;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     transition: all 0.3s ease;
+    text-align: left;
 }
 
 .email-example:hover {
@@ -404,9 +426,16 @@ footer {
 
 .email-content {
     background-color: white;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
     border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.email-content p {
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.7
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -417,11 +446,12 @@ footer {
 /* Guides */
 .guide {
     margin-bottom: 2rem;
-    padding: 1.5rem;
+    padding: 2rem;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     border-radius: 15px;
     border-left: 5px solid #667eea;
     transition: all 0.3s ease;
+    text-align: left;
 }
 
 .guide:hover {
@@ -432,26 +462,42 @@ footer {
 .guide h3 {
     color: #667eea;
     font-weight: 700;
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
+    font-size: 1.45rem;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.3px;
 }
 
 .guide ol {
-    margin-left: 1.5rem;
+    margin-left: 2rem;
     color: #1a1a2e;
+    line-height: 1.9;
 }
 
-/* Videos */
-.video {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+.guide li {2rem;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    text-align: left;
 }
 
 .video:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+}
+
+.video h3 {
+    color: #667eea;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.3px;
+}
+
+.video p {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+    line-height: 1.8
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     transform: translateY(-3px);
 }
@@ -493,15 +539,7 @@ footer {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-#strength-result p {
-    margin-bottom: 0.5rem;
-    color: #1a1a2e;
-}
-
-/* Quiz styles */
-.quiz-question {
-    margin-bottom: 2.5rem;
-    padding: 2rem;
+#strength-resu.5rem;
     border: none;
     border-radius: 15px;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -511,6 +549,16 @@ footer {
 
 .quiz-question:hover {
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+.quiz-question h3 {
+    margin-bottom: 1.5rem;
+    color: #667eea;
+    font-size: 1.45rem;
+    font-weight: 700;
+    text-align: left;
+    letter-spacing: 0.3pxx 25px rgba(102, 126, 234, 0.2);
     transform: translateY(-2px);
 }
 
@@ -528,20 +576,24 @@ footer {
 }
 
 .options label {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
+    display: f.2rem 1.5rem;
     cursor: pointer;
     border-radius: 10px;
     transition: all 0.3s ease;
     background: white;
     border: 2px solid #ddd;
     font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    min-height: 60px;
 }
 
 .options label:hover {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    border-color: #667eea;
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3
     border-color: #667eea;
     transform: translateX(5px);
 }
@@ -684,13 +736,15 @@ body.shake {
 
     .quiz-question h3 {
         font-size: 1rem;
-    }
-
-    section {
-        padding: 1.5rem;
-    }
-
-    nav ul {
+    }1rem 1.1rem;
+    margin: 0.8rem 0;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+    line-height: 1.6;
+    min-height: 45px
         gap: 0.25rem;
     }
 
@@ -902,4 +956,148 @@ input[type="checkbox"] {
     .progress-bar {
         height: 25px;
     }
+}
+
+/* ====== ENHANCED READABILITY ====== */
+
+/* Better mobile responsive improvements */
+@media (max-width: 768px) {
+    body {
+        font-size: 15px;
+    }
+
+    section {
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    section h2 {
+        font-size: 1.8rem;
+    }
+
+    .quiz-question {
+        padding: 1.8rem;
+    }
+
+    .options label {
+        padding: 1rem 1.2rem;
+        font-size: 1rem;
+        min-height: 55px;
+    }
+
+    .button {
+        padding: 1rem 2rem;
+        font-size: 1.05rem;
+    }
+
+    .guide, .video, .email-example {
+        padding: 1.5rem;
+    }
+
+    .guide h3, .video h3 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Improved text contrast and hierarchy */
+h1, h2, h3, h4, h5, h6 {
+    color: #667eea;
+    font-weight: 700;
+}
+
+strong {
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* Better list styling */
+ul, ol {
+    line-height: 1.9;
+}
+
+li {
+    margin-bottom: 0.7rem;
+}
+
+/* Improved focus states for accessibility */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Quiz results styling improvements */
+#quiz-results {
+    margin-top: 2rem;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    line-height: 1.8;
+}
+
+#quiz-results h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+/* Better error and success message styling */
+.error-message {
+    font-size: 1.8rem;
+    padding: 2rem 3rem;
+    min-width: 280px;
+}
+
+/* Enhanced content readability */
+.challenge-result {
+    line-height: 1.9;
+    padding: 2rem;
+}
+
+.challenge-result p {
+    margin: 1rem 0;
+    font-size: 1.1rem;
+}
+
+/* Better spacing for content sections */
+main > section {
+    margin-bottom: 3rem;
+}
+
+/* Improved intro section */
+#intro {
+    line-height: 1.9;
+}
+
+#intro p {
+    font-size: 1.15rem;
+    color: #555;
+    margin-bottom: 1.2rem;
+}
+
+/* Table improvements if present */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 1.05rem;
+}
+
+th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+    line-height: 1.6;
+}
+
+tr:hover {
+    background-color: #f5f7fa;
 }
