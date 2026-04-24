@@ -1,3 +1,20 @@
+// ====== NAVBAR HIDE/SHOW ON SCROLL ======
+let lastScrollTop = 0;
+const header = document.querySelector('header');
+
+window.addEventListener('scroll', function() {
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    if (scrollTop > lastScrollTop && scrollTop > 100) {
+        // Scrolling DOWN - hide header
+        header.style.transform = 'translateY(-100%)';
+    } else {
+        // Scrolling UP - show header
+        header.style.transform = 'translateY(0)';
+    }
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+});
+
 // ====== GAMIFICATION SYSTEM ======
 class GameState {
     constructor() {
@@ -203,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (/[^A-Za-z0-9]/.test(password)) score += 1;
         else suggestions.push("Add symbols like !@#$%.");
-
+        
         if (/^(password|123456|qwerty|letmein|admin)$/i.test(password)) {
             return {
                 strength: "Very Weak",
