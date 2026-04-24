@@ -77,10 +77,72 @@ class GameState {
 
 let gameState = GameState.load();
 
+// ====== ACHIEVEMENT DEFINITIONS ======
+const ACHIEVEMENTS = {
+    'first_challenge': {
+        name: 'First Challenge',
+        description: 'Complete your first challenge',
+        icon: '🎯',
+        category: 'challenge'
+    },
+    'phishing_master': {
+        name: 'Phishing Master',
+        description: 'Get perfect score in phishing challenge',
+        icon: '🕵️',
+        category: 'phishing'
+    },
+    'first_strong_password': {
+        name: 'Strong Password',
+        description: 'Create your first strong password',
+        icon: '🔐',
+        category: 'password'
+    },
+    'level_2': {
+        name: 'Level 2 Reached',
+        description: 'Reach Level 2',
+        icon: '⭐',
+        category: 'level'
+    },
+    'level_3': {
+        name: 'Level 3 Reached',
+        description: 'Reach Level 3',
+        icon: '⭐⭐',
+        category: 'level'
+    },
+    'level_5': {
+        name: 'Level 5 Master',
+        description: 'Reach Level 5',
+        icon: '👑',
+        category: 'level'
+    }
+};
+
 function updateGameUI() {
     const profileDiv = document.getElementById('game-profile');
     if (profileDiv) {
         const progress = gameState.getProgress();
+        
+        // Build achievements HTML
+        let achievementsHTML = '<div class="achievements-badges">';
+        
+        // Show unlocked achievements
+        const unlockedAchievements = gameState.achievements.filter(id => ACHIEVEMENTS[id]);
+        if (unlockedAchievements.length > 0) {
+            unlockedAchievements.forEach(id => {
+                const achievement = ACHIEVEMENTS[id];
+                achievementsHTML += `
+                    <div class="achievement-badge unlocked" title="${achievement.name}: ${achievement.description}">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-name">${achievement.name}</div>
+                    </div>
+                `;
+            });
+        } else {
+            achievementsHTML += '<p style="text-align: center; color: #999; margin: 1rem 0;">Complete challenges to earn achievements!</p>';
+        }
+        
+        achievementsHTML += '</div>';
+        
         profileDiv.innerHTML = `
             <div class="profile-header">
                 <h3>🎮 Level ${gameState.level}</h3>
@@ -90,7 +152,8 @@ function updateGameUI() {
                 <div class="progress-fill" style="width: ${progress}%"></div>
             </div>
             <div class="achievements-display">
-                <span class="achievement-count">🏆 ${gameState.achievements.length} Achievements</span>
+                <h4 style="color: #667eea; margin-bottom: 1rem; text-align: center;">🏆 Achievements (${gameState.achievements.length})</h4>
+                ${achievementsHTML}
             </div>
         `;
     }
@@ -220,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (/[^A-Za-z0-9]/.test(password)) score += 1;
         else suggestions.push("Add symbols like !@#$%.");
-        
+
         if (/^(password|123456|qwerty|letmein|admin)$/i.test(password)) {
             return {
                 strength: "Very Weak",
